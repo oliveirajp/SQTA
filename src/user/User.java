@@ -54,7 +54,6 @@ public class User {
 		double test = ThreadLocalRandom.current().nextDouble();
 		if(test <= p){
 			Scheduler.submitJob(randomizeJob(), x);
-			//randomizeJob();
 			time = 1;
 		}
 
@@ -75,9 +74,29 @@ public class User {
 		int jobTime = (int) (1 + ((1 - Math.exp(-(0.15 * ((double)maxNodes / 128.0)) * (double)time))  * (double)maxDuration ));
 		Job job = new Job(jobNodes, jobTime);
 		budget -= job.price;
-		//maxNodes
+		//calculateMaxNodes();
 		return job;
 	}
 
+	/*void calculateMaxNodes(){
+		switch (maxJob) {
+		case 2:
+			
+			break;
+		case 3:
 
+			break;
+		case 4:
+			if(budget / Job.HPRICE < 1)
+				
+			break;
+		}
+		if(budget / Job.HPRICE < 1)
+			maxNodes = Job.LMAXNODE;
+		if(budget < Job.LMAXNODE)
+			maxNodes = Job.MMAXNODE;
+		if(budget < Job.MMAXNODE)
+			maxNodes = Job.SMAXNODE;
+
+	}*/
 }

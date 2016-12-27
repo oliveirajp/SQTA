@@ -7,16 +7,16 @@ public class Scheduler {
 
 	static ArrayList<Job> queue;
 	//static int freedCores;
-	
+
 	public Scheduler(){
 		queue = new ArrayList<Job>();
 	}
-	
+
 	public static void submitJob(Job j, int time){
 		j.waitTime = time;
 		queue.add(j);
 	}
-	
+
 	public void update(int time){
 		//System.out.println("Previous " + queue.size());
 		for(int i = 0; i < queue.size(); i++){
@@ -44,7 +44,15 @@ public class Scheduler {
 			}
 			if(queue.get(i).nodes <= SuperComputer.availableNodes){
 				if(i != 0){
-					if(queue.get(i).endTime <= SuperComputer.activeJobs.get(0).endTime){
+					if(SuperComputer.activeJobs.size() > 0){
+						if(queue.get(i).endTime <= SuperComputer.activeJobs.get(0).endTime){
+							SuperComputer.startJob(queue.get(i), time);
+							queue.remove(i);
+							i--;
+							continue;
+						}
+					}
+					else{
 						SuperComputer.startJob(queue.get(i), time);
 						queue.remove(i);
 						i--;
