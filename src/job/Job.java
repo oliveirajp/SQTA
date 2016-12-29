@@ -10,7 +10,7 @@ public class Job {
 	public final static int MPRICE = 8;
 	public static int LMAXNODE = (int) (0.5 * SuperComputer.nodes);
 	public final static int LMAXT = 16 * 60;
-	public final static int LPRICE = 8;
+	public final static int LPRICE = 16;
 	public static int HMAXNODE = SuperComputer.nodes;
 	public final static int HMAXT = 64 * 60;
 	public final static int HPRICE = 64;
@@ -20,36 +20,41 @@ public class Job {
 	public int endTime;
 	public int duration;
 	public int price;
-	public int queue;
-	public int waitTime;
+	public int jobType, assignedQueue;
+	public int startTime, fixedDuration;
 
-	public Job(int nodes, int duration) {
+	public Job(int nodes, int duration) throws Exception {
+		if(nodes > HMAXNODE || duration > HMAXT)
+			throw new Exception("Job parameters wrong");
 		this.nodes = nodes;
 		this.duration = duration;
 		if(nodes <= SMAXNODE && duration <= SMAXT){
-			queue = 1;
+			jobType = 1;
 			maxNodes = SMAXNODE;
 			endTime = SMAXT;
 			price = SPRICE;
 		} else if(nodes <= MMAXNODE && duration <= MMAXT){
-			queue = 2;
+			jobType = 2;
 			maxNodes = MMAXNODE;
 			endTime = MMAXT;
 			price = MPRICE;
 		}
 		else if(nodes <= LMAXNODE && duration <= LMAXT){
-			queue = 3;
+			jobType = 3;
 			maxNodes = LMAXNODE;
 			endTime = LMAXT;
 			price = LPRICE;
 		}
 		else{
-			queue = 4;
+			jobType = 4;
 			maxNodes = HMAXNODE;
 			endTime = HMAXT;
 			price = HPRICE;
-		}	
+		}
+		assignedQueue = jobType;
 		price *= nodes;
+		fixedDuration = duration;
+		startTime = 1;
 	}
 
 	public void update(){

@@ -5,52 +5,61 @@ import java.util.ArrayList;
 
 public class SuperComputer {
 	public final static int nodes = 128;
-	static int smallNodes;
-	static int mediumNodes;
-	static int availableNodes;
-	static ArrayList<Job> activeJobs;
+	private static int smallNodes;
+	private static int mediumNodes;
+	private static int availableNodes;
+	private static int weekendNodes;
+	static public final int operatingCosts = 2;
+	private static ArrayList<Job> activeJobs;
 
 	public SuperComputer() {
 		activeJobs = new ArrayList<Job>();
 		smallNodes = (int) (0.1 * nodes);
 		mediumNodes = (int) (0.3 * nodes);
 		availableNodes = nodes - (smallNodes + mediumNodes);
+		weekendNodes = nodes;
 	}
 
-	public static void startJob(Job job, int time){
+	public static void startJob(Job job, int time) throws Exception{
 		int i;
 		for(i = 0; i < activeJobs.size(); i++){
 			if(activeJobs.get(i).endTime <= job.endTime)
 				break;
 		}
-		switch (job.queue) {
+		switch (job.assignedQueue) {
 		case 1:
 			smallNodes -= job.nodes;
+			Simulator.sNumbers++;
+			Simulator.sWait += time - job.startTime;
 			break;
 		case 2:
 			mediumNodes -= job.nodes;
+			Simulator.mNumbers++;
+			Simulator.mWait += time - job.startTime;
 			break;
 		case 3:
 			availableNodes -= job.nodes;
+			Simulator.lNumbers++;
+			Simulator.lWait += time - job.startTime;
 			break;
 		case 4:
-			//todo
-			availableNodes -= job.nodes;
+			weekendNodes -= job.nodes;
+			Simulator.hNumbers++;
+			Simulator.hWait += time - job.startTime;
 			break;
 		}
-		job.waitTime = time - job.waitTime;
-		Simulator.waitTimes.add(job.waitTime);
-		activeJobs.add(i, job);			
+		activeJobs.add(i, job);
+		if(smallNodes < 0 || mediumNodes < 0 || availableNodes < 0 || weekendNodes < 0)
+			throw new Exception("Queue overused");
 	}
 
-	public void update(){
-	//	System.out.println("Small " + smallNodes + "Medium " + mediumNodes + "Rest " + availableNodes);
+	public static void update(int time){
 		for (int i = 0; i < activeJobs.size(); i++) {
 			activeJobs.get(i).update();
 
 			if(activeJobs.get(i).duration == 0){
 				Job j = activeJobs.get(i);
-				switch (j.queue) {
+				switch (j.assignedQueue) {
 				case 1:
 					smallNodes += j.nodes;
 					break;
@@ -61,12 +70,51 @@ public class SuperComputer {
 					availableNodes += j.nodes;
 					break;
 				case 4:
-					//todo
+					weekendNodes += j.nodes;
 					break;
 				}
+				Simulator.getTurnAroundTimes().add((time - j.startTime) / j.fixedDuration);
+				Simulator.hoursConsumed += (double)j.fixedDuration / 60.0;
+				Simulator.nodesConsumed += j.nodes;
 				activeJobs.remove(i);
-				i--;
+				i--;				
 			}
 		}
+	}
+
+	public static ArrayList<Job> getActiveJobs() {
+		return activeJobs;
+	}
+
+	public static int getSmallNodes() {
+		return smallNodes;
+	}
+
+	public static void setSmallNodes(int smallNodes) {
+		SuperComputer.smallNodes = smallNodes;
+	}
+
+	public static int getMediumNodes() {
+		return mediumNodes;
+	}
+
+	public static void setMediumNodes(int mediumNodes) {
+		SuperComputer.mediumNodes = mediumNodes;
+	}
+
+	public static int getAvailableNodes() {
+		return availableNodes;
+	}
+
+	public static void setAvailableNodes(int availableNodes) {
+		SuperComputer.availableNodes = availableNodes;
+	}
+
+	public static int getWeekendNodes() {
+		return weekendNodes;
+	}
+
+	public static void setWeekendNodes(int weekendNodes) {
+		SuperComputer.weekendNodes = weekendNodes;
 	}
 }

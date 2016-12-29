@@ -7,19 +7,24 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import job.*;
 import simulator.Scheduler;
+import simulator.Simulator;
 
-public class User {
-	int budget;
-	int maxJob;
-	int maxNodes;
-	int maxDuration;
-	double submitRate;
-	int time;
-	double jobsPerDay;
-	double corrector;
+public abstract class User {
+	static int id = 0;
+	private int budget;
+	private int maxJob;
+	private int maxNodes;
+	private int maxDuration;
+	private double submitRate;
+	private int time;
+	private double jobsPerDay;
+	private double probability;
+	private double chance;
+	public int jobNodes, jobTime;
 	FileWriter fw;
 	BufferedWriter bw;
 	public User(int maxJob, double jobsPerDay) {
+		id++;
 		this.maxJob = maxJob;
 		this.jobsPerDay = jobsPerDay;
 		switch (maxJob) {
@@ -36,25 +41,19 @@ public class User {
 			maxDuration = Job.HMAXT;
 			break;
 		}
-		corrector = 1/(55.0/64.0);//1/(1-Math.exp(-((0.5*maxNodes)/(60*24)) * 80));
-		this.submitRate = jobsPerDay/(60*24);
-		try {
-			fw = new FileWriter("test4.csv");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		bw = new BufferedWriter(fw);
+		this.submitRate = jobsPerDay/(60.0*24.0);
+		time = 0;
 	}
 
-	public void update(int x){
-		time++;
-
-		double p = 1 - Math.exp(-submitRate * time);
-		double test = ThreadLocalRandom.current().nextDouble();
-		if(test <= p){
-			Scheduler.submitJob(randomizeJob(), x);
-			time = 1;
+	public void update(int x) throws Exception{
+		if(budget > 0){
+			time++;
+			probability = 1 - Math.exp(-submitRate * time);
+			chance = ThreadLocalRandom.current().nextDouble();
+			if(chance <= probability){
+				Scheduler.submitJob(randomizeJob(), x);
+				time = 0;
+			}
 		}
 
 	}
@@ -69,34 +68,89 @@ public class User {
 
 	}
 
-	public Job randomizeJob(){
-		int jobNodes = (int) (1 + ((1 - Math.exp(-(0.15 * ((double)maxNodes / 128.0)) * (double)time)) * (double)maxNodes));
-		int jobTime = (int) (1 + ((1 - Math.exp(-(0.15 * ((double)maxNodes / 128.0)) * (double)time))  * (double)maxDuration ));
-		Job job = new Job(jobNodes, jobTime);
-		budget -= job.price;
-		//calculateMaxNodes();
-		return job;
+	public Job randomizeJob() throws Exception{
+		if(budget > 0){
+			calculateMaxNodes();
+			jobNodes = (int) (1 + ((1 - Math.exp(-(0.15 * ((double)maxNodes / 128.0)) * (double)time)) * (double)maxNodes));
+			jobTime = (int) (1 + ((1 - Math.exp(-(0.15 * ((double)maxNodes / 128.0)) * (double)time))  * (double)maxDuration ));
+			Job job = new Job(jobNodes, jobTime);
+			budget -= job.price;
+
+			Simulator.pricePaidByUsers += job.price;
+			return job;
+		}
+		else
+			throw new Exception("Null budget");
 	}
 
-	/*void calculateMaxNodes(){
-		switch (maxJob) {
-		case 2:
-			
-			break;
-		case 3:
-
-			break;
-		case 4:
-			if(budget / Job.HPRICE < 1)
-				
-			break;
+	public void calculateMaxNodes(){
+		if(budget >= Job.HPRICE && maxJob == 4){
+			maxNodes = budget / Job.HPRICE;
+			maxNodes = maxNodes < Job.HMAXNODE ? maxNodes : Job.HMAXNODE;
+			maxDuration = Job.HMAXT;			
+		} else if(budget >= Job.LPRICE && maxJob >= 3){
+			maxNodes = budget / Job.LPRICE;
+			maxNodes = maxNodes < Job.LMAXNODE ? maxNodes : Job.LMAXNODE;
+			maxDuration = Job.LMAXT;			
+		}else if(budget >= Job.MPRICE){
+			maxNodes = budget / Job.MPRICE;
+			maxNodes = maxNodes < Job.MMAXNODE ? maxNodes : Job.MMAXNODE;
+			maxDuration = Job.MMAXT;			
+		} else if(budget >= Job.SPRICE){
+			maxNodes = budget / Job.SPRICE;
+			maxNodes = maxNodes < Job.SMAXNODE ? maxNodes : Job.SMAXNODE;
+			maxDuration = Job.SMAXT;
 		}
-		if(budget / Job.HPRICE < 1)
-			maxNodes = Job.LMAXNODE;
-		if(budget < Job.LMAXNODE)
-			maxNodes = Job.MMAXNODE;
-		if(budget < Job.MMAXNODE)
-			maxNodes = Job.SMAXNODE;
+		else{
+			maxNodes = 0;
+			maxDuration = 0;
+		}
+	}
 
-	}*/
+	public int getMaxJob() {
+		return maxJob;
+	}
+
+	public void setMaxJob(int maxJob) {
+		this.maxJob = maxJob;
+	}
+
+	public double getJobsPerDay() {
+		return jobsPerDay;
+	}
+
+	public int getMaxNodes() {
+		return maxNodes;
+	}
+
+
+	public int getMaxDuration() {
+		return maxDuration;
+	}
+	public double getSubmitRate() {
+		return submitRate;
+	}
+	public int getTime() {
+		return time;
+	}
+
+	public void setTime(int time) {
+		this.time = time;
+	}
+
+	public double getProbability() {
+		return probability;
+	}
+
+	public int getBudget() {
+		return budget;
+	}
+
+	public void setBudget(int budget) {
+		this.budget = budget;
+	}
+
+	public double getChance() {
+		return chance;
+	}
 }
