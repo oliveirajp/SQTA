@@ -1,18 +1,16 @@
 package user;
 
-import java.util.concurrent.ThreadLocalRandom;
-
-import job.Job;
+import simulationSystem.Job;
 
 public class MediumUser extends User{
 
-	public MediumUser(int maxBudget) throws Exception {
+	public MediumUser(int budget) throws Exception {
 		super(3, 5.0);
 		int min = Job.LMAXNODE * Job.LPRICE;
-		if(min > maxBudget)
+		if(min > budget)
 			throw new Exception("Initial budget too low");
 		
-		setBudget(ThreadLocalRandom.current().nextInt(min, maxBudget + 1));		
+		setBudget(budget);		
 	}
 
 

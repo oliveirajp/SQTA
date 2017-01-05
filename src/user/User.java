@@ -5,9 +5,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.concurrent.ThreadLocalRandom;
 
-import job.*;
-import simulator.Scheduler;
-import simulator.Simulator;
+import simulationSystem.Job;
+import simulationSystem.Scheduler;
+import simulationSystem.Simulator;
 
 public abstract class User {
 	static int id = 0;
@@ -54,16 +54,6 @@ public abstract class User {
 				Scheduler.submitJob(randomizeJob(), x);
 				time = 0;
 			}
-		}
-
-	}
-
-	public void destroy(){
-		try {
-			bw.close();
-			fw.close();			
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 
 	}

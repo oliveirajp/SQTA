@@ -6,10 +6,10 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
-import job.Job;
-import simulator.Scheduler;
-import simulator.Simulator;
-import simulator.SuperComputer;
+import simulationSystem.Job;
+import simulationSystem.Scheduler;
+import simulationSystem.Simulator;
+import simulationSystem.SuperComputer;
 
 public class TestScheduler {
 
@@ -32,6 +32,7 @@ public class TestScheduler {
 			assertTrue(j1 == Scheduler.getQueue().get(queueSize));
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
+			fail();
 		}
 	}
 
@@ -61,6 +62,8 @@ public class TestScheduler {
 			s.update(Simulator.weekEndStart, Simulator.weekEndStart);
 			
 			assertEquals(3, Scheduler.getQueue().size());
+			
+			new SuperComputer();
 			
 			s.update(501, 501);
 			
@@ -135,14 +138,14 @@ public class TestScheduler {
 			s.update(10, 10);
 			
 			assertEquals(2, Scheduler.getQueue().size());
-			
+			new SuperComputer();
 			s.update(Simulator.weekEndStart, Simulator.weekEndStart);
 			
 			assertEquals(1, Scheduler.getQueue().size());
 			
-			Scheduler.submitJob(s2, 2);
-			Scheduler.submitJob(s3, 3);
-			s.update(1, 1);
+//			Scheduler.submitJob(s2, 2);
+//			Scheduler.submitJob(s3, 3);
+//			s.update(1, 1);
 			
 		} catch(Exception e){
 			System.out.println(e.getMessage());

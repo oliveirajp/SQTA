@@ -1,5 +1,4 @@
-package job;
-import simulator.SuperComputer;
+package simulationSystem;
 
 public class Job {
 	public static int SMAXNODE = 2;

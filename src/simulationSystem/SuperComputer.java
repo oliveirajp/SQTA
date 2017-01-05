@@ -1,6 +1,4 @@
-package simulator; 
-import job.*;
-
+package simulationSystem; 
 import java.util.ArrayList;
 
 public class SuperComputer {
@@ -10,13 +8,16 @@ public class SuperComputer {
 	private static int availableNodes;
 	private static int weekendNodes;
 	static public final int operatingCosts = 2;
+	private static final int initSmallNodes = (int) (0.1 * nodes);
+	private static final int initMediumNodes = (int) (0.3 * nodes);
+	private static final int initAvailableNodes = nodes - (initSmallNodes + initMediumNodes);
 	private static ArrayList<Job> activeJobs;
 
 	public SuperComputer() {
 		activeJobs = new ArrayList<Job>();
-		smallNodes = (int) (0.1 * nodes);
-		mediumNodes = (int) (0.3 * nodes);
-		availableNodes = nodes - (smallNodes + mediumNodes);
+		smallNodes = initSmallNodes;
+		mediumNodes = initMediumNodes;
+		availableNodes = initAvailableNodes;
 		weekendNodes = nodes;
 	}
 
@@ -51,6 +52,10 @@ public class SuperComputer {
 		activeJobs.add(i, job);
 		if(smallNodes < 0 || mediumNodes < 0 || availableNodes < 0 || weekendNodes < 0)
 			throw new Exception("Queue overused");
+		
+		if(weekendNodes != nodes)
+			if(smallNodes != initSmallNodes || mediumNodes != initMediumNodes || availableNodes != initAvailableNodes)
+			throw new Exception("WeekendQueue overused");
 	}
 
 	public static void update(int time){

@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import job.Job;
+import simulationSystem.Job;
 import user.SmallUser;
 
 public class TestSmallUser {

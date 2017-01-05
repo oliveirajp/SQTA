@@ -1,8 +1,6 @@
-package simulator;
+package simulationSystem;
 
 import java.util.ArrayList;
-
-import job.Job;
 public class Scheduler {
 
 	private static ArrayList<Job> queue;
@@ -17,6 +15,8 @@ public class Scheduler {
 	}
 
 	public void update(int fakeTime, int time) throws Exception{
+		
+		
 		for(int i = 0; i < queue.size(); i++){
 			if(fakeTime >= Simulator.weekEndStart && queue.get(i).jobType != 4)
 				continue;

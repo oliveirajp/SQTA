@@ -6,7 +6,7 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
-import job.Job;
+import simulationSystem.Job;
 import user.LargeUser;
 
 public class TestLargeUser {

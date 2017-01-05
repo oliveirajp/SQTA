@@ -4,8 +4,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import job.Job;
-import simulator.Scheduler;
+import simulationSystem.Job;
+import simulationSystem.Scheduler;
 import user.LargeUser;
 import user.MediumUser;
 import user.SmallUser;

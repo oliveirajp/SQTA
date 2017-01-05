@@ -1,6 +1,5 @@
-package simulator;
+package simulationSystem;
 import java.util.ArrayList;
-import java.util.concurrent.ThreadLocalRandom;
 
 import user.LargeUser;
 import user.MediumUser;
@@ -22,11 +21,11 @@ public class Simulator {
 	private int week;
 	private int realTime;
 
-	public Simulator(int userSize) {
+	public Simulator(int userSize, int[] userTypes, int[] budgets) {
 		turnAroundTimes = new ArrayList<Integer>();
 		new SuperComputer();
 		sched = new Scheduler();
-		int randomType;
+		//int randomType;
 		users = new ArrayList<User>();
 		time = 0;
 		week = 0;
@@ -37,7 +36,7 @@ public class Simulator {
 		hoursConsumed = 0.0;
 		pricePaidByUsers = 0;
 		try{
-			for(int i = 0; i < userSize; i++)
+			/*for(int i = 0; i < userSize; i++)
 			{
 				randomType = ThreadLocalRandom.current().nextInt(1, 4);
 				switch (randomType) {
@@ -48,6 +47,25 @@ public class Simulator {
 					break;
 				case 3:
 					users.add(new LargeUser(1000000));
+					break;
+				}
+			}*/
+			int budget;
+			for (int i = 0; i < userSize; i++) {
+				budget = budgets[i];
+				switch (userTypes[i]) {
+				case 1: 
+					users.add(new SmallUser(budget));
+					break;
+				case 2:
+					users.add(new MediumUser(budget));
+					break;
+				case 3:
+					users.add(new LargeUser(budget));
+					break;
+				default:
+					System.err.println("Incorrect user type");
+					System.exit(0);
 					break;
 				}
 			}
@@ -78,11 +96,6 @@ public class Simulator {
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 			System.exit(0);
-		}
-	}
-	public void destroy(){
-		for (User user : users) {
-			user.destroy();
 		}
 	}
 
